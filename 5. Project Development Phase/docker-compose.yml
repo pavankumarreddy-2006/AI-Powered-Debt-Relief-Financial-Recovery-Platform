@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/workspace/backend
+    environment:
+      - DATABASE_URL=sqlite:////workspace/backend/debt_relief.db
+      - SECRET_KEY=9a1b8c7d6e5f4c3b2a1a0f9e8d7c6b5a
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=1440
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    restart: always
